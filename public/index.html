@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerology: Unlock Your Destiny</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <script src="script.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <style>
+        /* General styling */
+        body {
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("view.jpg");
+            background-size: cover;
+            background-position: center;            
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Standardized container styling */
+        .container, .reading-container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            margin: 20px auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+        }
+
+        /* Specific styling for the reading-container */
+        .reading-container {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Header and Section Titles */
+        h1, h2 {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin: 20px 0 10px;
+        }
+
+        /* Description text */
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input[type="text"], input[type="date"], input[type="email"] {
+            width: 80%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: none;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            background-color: #1a3a5f; /* Deep blue color */
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2d4a7f; /* Slightly lighter blue for hover effect */
+        }
+
+        /* Info Section Styling */
+        .info-section {
+            text-align: left;
+            margin: 20px 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .info-section h3 {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+        }
+
+        /* Reading Number Section Styling */
+        .number-section {
+            margin-bottom: 20px;
+            background-color: rgba(179, 179, 179, 0.18);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .number-section h2 {
+            font-size: 1.4em;
+            color: #f1f1f1;
+        }
+
+        /* Privacy Notice Styling */
+        #privacy {
+            border-style: outset;
+            padding: 8px 4px;
+            text-align: center;
+        }
+
+        /* Modal styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark background */
+}
+
+.modal-content {
+    background-color: #1a3a5f;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    color: #ffffff;
+}
+
+.modal-content h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #f1f1f1;
+}
+
+.modal-content p {
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #ffffff;
+}
+
+/* Link styling */
+.link-text {
+    color: #f1c40f;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.link-text:hover {
+    color: #f39c12;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Unlock Your Destiny</h1>
+        <p>Uncover the hidden meanings behind your birth date and name.</p>
+        
+        <!-- Form Section -->
+        <form id="readingForm">
+            <h2>Discover Your Unique Numerology Profile</h2>
+            <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
+            <input type="date" id="birthDate" name="birthDate" required>
+            <input type="email" id="email" name="email" placeholder="Email Address" required>
+            
+            <!-- Checkbox for Terms and Conditions -->
+               <label>
+                <input type="checkbox" required onclick="openModal('termsModal')">
+                I have read and agree to the <span class="link-text">Terms and Conditions</span>.
+            </label><br>
+
+            <!-- Checkbox for Privacy Policy -->
+            <label>
+                <input type="checkbox" required onclick="openModal('privacyModal')">
+                I have read and agree to the <span class="link-text">Privacy Policy</span>.
+            </label><br>
+           
+            <button type="submit">Get Started</button>
+        </form>
+
+<!-- Terms and Conditions Modal -->
+<div id="termsModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('termsModal')">&times;</span>
+        <h2>Terms and Conditions</h2>
+        
+        <h3>1. Acceptance of Terms</h3>
+        <p>By using our website and services, you agree to comply with these Terms and Conditions. Please read them carefully before proceeding.</p>
+        
+        <h3>2. Service Description</h3>
+        <p>Our website provides numerology readings and related informational services. These readings are intended solely for personal, entertainment, and informational use.</p>
+        
+        <h3>3. Disclaimer</h3>
+        <p>Our services do not provide medical, financial, legal, or other professional advice. We disclaim all liability for actions taken by users based on our readings. Users should consult professionals for advice on these matters.</p>
+        
+        <h3>4. Eligibility</h3>
+        <p>You must be 18 years or older to use this service, or have obtained parental consent. By agreeing to these terms, you confirm that you meet this requirement.</p>
+        
+        <h3>5. Payments and Refunds</h3>
+        <p>All payments made on this site are final and non-refundable, except where required by law. Please ensure you are satisfied with our service offerings before making any payment.</p>
+        
+        <h3>6. Intellectual Property</h3>
+        <p>All content, including text, images, and numerology readings, is the property of [Your Company Name] and may not be reproduced, distributed, or used commercially without permission.</p>
+        
+        <h3>7. Limitation of Liability</h3>
+        <p>We provide our services "as-is" without warranties of any kind. We are not liable for any damages or losses resulting from your use of our services.</p>
+        
+        <h3>8. Privacy and Data Use</h3>
+        <p>We respect your privacy. Please refer to our Privacy Policy for details on how we collect and use your personal data.</p>
+        
+        <h3>9. Governing Law</h3>
+        <p>These terms are governed by the laws of [Your Country/State]. Any disputes arising under these terms will be resolved in the courts of [Your Jurisdiction].</p>
+        
+        <h3>10. Changes to Terms</h3>
+        <p>We reserve the right to update these terms at any time. Continued use of our website after changes constitutes your acceptance of the new terms.</p>
+    </div>
+</div>
+
+
+<!-- Privacy Policy Modal -->
+<div id="privacyModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+        <h2>Privacy Policy</h2>
+        
+        <h3>1. Data Collection</h3>
+        <p>We collect personal data such as your name, date of birth, and email address to provide your numerology reading. We may collect additional data if needed for customer service or to improve our offerings.</p>
+        
+        <h3>2. Data Use</h3>
+        <p>Your data is used solely to generate and deliver your personalized numerology reading. We may also use your email to contact you about related products or services, but only if you have opted in to receive such communications.</p>
+        
+        <h3>3. Data Retention</h3>
+        <p>We retain your personal data only as long as necessary to provide our services and fulfill legal requirements. You may request deletion of your data by contacting us at [Your Email Address].</p>
+        
+        <h3>4. Data Sharing</h3>
+        <p>We do not sell, rent, or share your personal data with third parties for marketing purposes. We may share data with service providers (e.g., payment processors) strictly for business purposes and only under contract to protect your data.</p>
+        
+        <h3>5. Security Measures</h3>
+        <p>We use encryption and secure storage practices to protect your data. However, no internet transmission is completely secure, and we cannot guarantee the security of your data transmitted to our site.</p>
+        
+        <h3>6. User Rights</h3>
+        <p>You have the right to access, correct, or delete your data. You may also object to certain processing activities, such as marketing. Contact us at [Your Email Address] for any requests.</p>
+        
+        <h3>7. Cookies and Tracking</h3>
+        <p>We use cookies to enhance your experience on our website. You may disable cookies in your browser settings, but some features may not function properly as a result.</p>
+        
+        <h3>8. Changes to Privacy Policy</h3>
+        <p>We reserve the right to update this policy to reflect changes in our practices or legal requirements. Please check this page periodically for updates.</p>
+    </div>
+</div>
+
+
+
+        <!-- Numerology Insights Section -->
+        <div class="info-section">
+            <h2>Understand the Power of Numerology</h2>
+            <h3>1. Ancient Wisdom</h3>
+            <p>Numerology is an ancient practice that dates back thousands of years, rooted in the belief that numbers hold profound meaning.</p>
+            
+            <h3>2. Self-Discovery</h3>
+            <p>By understanding your numerological profile, you can gain deeper insights into your strengths, weaknesses, and life purpose.</p>
+            
+            <h3>3. Empowerment</h3>
+            <p>Numerology empowers you to make informed decisions and navigate life's challenges with greater clarity and confidence.</p>
+        </div>
+    </div>
+
+    <!-- Reading Container Section (Added below the main container) -->
+    <div class="reading-container">
+        <h2>Your Personalized Numerology Reading</h2>
+
+        <!-- Life Path Number -->
+        <div class="number-section">
+        <h2>Life Path Number</h2>
+            <p>Your Life Path Number reveals the essence of your journey in this lifetime...</p>
+        </div>
+
+        <!-- Destiny Number -->
+        <div class="number-section">
+        <h2>Destiny Number</h2>
+            <p>Your Destiny Number uncovers the goals your soul seeks to achieve...</p>
+        </div>
+
+        <!-- Soul Urge Number -->
+        <div class="number-section">
+        <h2>Soul Urge Number</h2>
+            <p>The Soul Urge Number, also known as the Heart’s Desire, reveals your inner yearnings...</p>
+        </div>
+
+        <!-- Birthday Number -->
+        <div class="number-section">
+        <h2>Birthday Number</h2>
+            <p>Your Birthday Number signifies your unique talents and abilities...</p>
+        </div>
+
+        <!-- Expression Number -->
+        <div class="number-section">
+        <h2>The Expression Number</h2>
+            <p>The Expression Number reveals how you express yourself in the world...</p>
+        </div>
+
+        <!-- Karmic Number -->
+        <div class="number-section">
+        <h2>Karmic Number</h2>
+            <p>Your Karmic Number uncovers any spiritual debts from past lives...</p>
+        </div>
+    </div>
+    <script>
+        document.getElementById("readingForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const fullName = document.getElementById('fullName').value;
+            const birthDate = document.getElementById('birthDate').value;
+            const email = document.getElementById('email').value;
+
+            try {
+                // Send user data to the backend to create a checkout session
+                const response = await fetch('/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, birthDate, email })
+                });
+
+                const data = await response.json();
+
+                if (data.testingRedirect) {
+                    // Redirect directly to success if in testing mode
+                    window.location.href = data.testingRedirect;
+                } else if (data.id) {
+                    // Redirect to Stripe checkout if live payment is enabled
+                    const stripe = Stripe('pk_test_51QEtfIFV30F9kFicF3eb8oxnCyZCbVB7CAsKtH6tsrnFGiKZ598scMWxO6c7wZGJIHwjEaJNGnqFnnq5yK9qdcbx00Jp8HByB9'); // Replace with your Stripe public key
+                    await stripe.redirectToCheckout({ sessionId: data.id });
+                } else {
+                    alert("An error occurred: " + data.error);
+                }
+            } catch (error) {
+                console.error("Error creating checkout session:", error);
+                alert("Failed to create checkout session.");
+            }
+        });
+    </script>
+    
+</body>
+</html>
