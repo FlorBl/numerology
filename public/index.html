@@ -215,7 +215,8 @@
         <form id="readingForm">
             <h2></h2>
             <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
-            <input type="date" id="birthDate" name="birthDate" class="form-control datepicker" placeholder="MM/DD/YYYY" required>
+            <input type="text" id="birthDate" name="birthDate" class="form-control datepicker" placeholder="MM/DD/YYYY" required>
+            <span id="dateError" style="color: red; display: none;"></span>
             <input type="email" id="email" name="email" placeholder="Email Address" required>
             
             <!-- Checkbox for Terms and Conditions -->
@@ -426,6 +427,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <!-- Bootstrap Datepicker JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-
+<script src="formValidation.js"></script>
 </body>
 </html>
