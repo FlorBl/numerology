@@ -160,14 +160,14 @@
     width: 80%;
     max-width: 600px;
     border-radius: 10px;
-    color: #ffffff;
+    color: #c5c5c5;
 }
 
-.modal-content h2 {
+.modal-content h3 {
     font-family: 'Cinzel', serif;
     font-size: 1.8em;
     margin-bottom: 10px;
-    color: #f1f1f1;
+    color: #c5c5c5;
 }
 
 .modal-content p {
@@ -198,7 +198,10 @@
     color: #f39c12;
 }
 
-
+.secTitle{
+    margin-bottom: 15px;
+    text-align: center;
+}
 
     </style>
 </head>
@@ -212,8 +215,7 @@
         <form id="readingForm">
             <h2></h2>
             <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
-            <input type="text" id="birthDate" name="birthDate" class="form-control datepicker" placeholder="MM/DD/YYYY" required>
-
+            <input type="date" id="birthDate" name="birthDate" class="form-control datepicker" placeholder="MM/DD/YYYY" required>
             <input type="email" id="email" name="email" placeholder="Email Address" required>
             
             <!-- Checkbox for Terms and Conditions -->
@@ -237,36 +239,36 @@
 <div id="termsModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('termsModal')">&times;</span>
-        <h2>Terms and Conditions</h2>
+        <h3 class="secTitle">Terms and Conditions</h3>
         
-        <h3>1. Acceptance of Terms</h3>
+        <h4>1. Acceptance of Terms</h4>
         <p>By using our website and services, you agree to comply with these Terms and Conditions. Please read them carefully before proceeding.</p>
         
-        <h3>2. Service Description</h3>
+        <h4>2. Service Description</h4>
         <p>Our website provides numerology readings and related informational services. These readings are intended solely for personal, entertainment, and informational use.</p>
         
-        <h3>3. Disclaimer</h3>
+        <h4>3. Disclaimer</h4>
         <p>Our services do not provide medical, financial, legal, or other professional advice. We disclaim all liability for actions taken by users based on our readings. Users should consult professionals for advice on these matters.</p>
         
-        <h3>4. Eligibility</h3>
+        <h4>4. Eligibility</h4>
         <p>You must be 18 years or older to use this service, or have obtained parental consent. By agreeing to these terms, you confirm that you meet this requirement.</p>
         
-        <h3>5. Payments and Refunds</h3>
+        <h4>5. Payments and Refunds</h4>
         <p>All payments made on this site are final and non-refundable, except where required by law. Please ensure you are satisfied with our service offerings before making any payment.</p>
         
-        <h3>6. Intellectual Property</h3>
+        <h4>6. Intellectual Property</h4>
         <p>All content, including text, images, and numerology readings, is the property of [Your Company Name] and may not be reproduced, distributed, or used commercially without permission.</p>
         
-        <h3>7. Limitation of Liability</h3>
+        <h4>7. Limitation of Liability</h4>
         <p>We provide our services "as-is" without warranties of any kind. We are not liable for any damages or losses resulting from your use of our services.</p>
         
-        <h3>8. Privacy and Data Use</h3>
+        <h4>8. Privacy and Data Use</h4>
         <p>We respect your privacy. Please refer to our Privacy Policy for details on how we collect and use your personal data.</p>
         
-        <h3>9. Governing Law</h3>
+        <h4>9. Governing Law</h4>
         <p>These terms are governed by the laws of [Your Country/State]. Any disputes arising under these terms will be resolved in the courts of [Your Jurisdiction].</p>
         
-        <h3>10. Changes to Terms</h3>
+        <h4>10. Changes to Terms</h4>
         <p>We reserve the right to update these terms at any time. Continued use of our website after changes constitutes your acceptance of the new terms.</p>
     </div>
 </div>
@@ -276,30 +278,30 @@
 <div id="privacyModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('privacyModal')">&times;</span>
-        <h2>Privacy Policy</h2>
+        <h3 class="secTitle">Privacy Policy</h3>
         
-        <h3>1. Data Collection</h3>
+        <h4>1. Data Collection</h4>
         <p>We collect personal data such as your name, date of birth, and email address to provide your numerology reading. We may collect additional data if needed for customer service or to improve our offerings.</p>
-        
-        <h3>2. Data Use</h3>
+                
+        <h4>2. Data Use</h4>
         <p>Your data is used solely to generate and deliver your personalized numerology reading. We may also use your email to contact you about related products or services, but only if you have opted in to receive such communications.</p>
-        
-        <h3>3. Data Retention</h3>
+                
+        <h4>3. Data Retention</h4>
         <p>We retain your personal data only as long as necessary to provide our services and fulfill legal requirements. You may request deletion of your data by contacting us at [Your Email Address].</p>
-        
-        <h3>4. Data Sharing</h3>
+                
+        <h4>4. Data Sharing</h4>
         <p>We do not sell, rent, or share your personal data with third parties for marketing purposes. We may share data with service providers (e.g., payment processors) strictly for business purposes and only under contract to protect your data.</p>
-        
-        <h3>5. Security Measures</h3>
+                
+        <h4>5. Security Measures</h4>
         <p>We use encryption and secure storage practices to protect your data. However, no internet transmission is completely secure, and we cannot guarantee the security of your data transmitted to our site.</p>
-        
-        <h3>6. User Rights</h3>
+                
+        <h4>6. User Rights</h4>
         <p>You have the right to access, correct, or delete your data. You may also object to certain processing activities, such as marketing. Contact us at [Your Email Address] for any requests.</p>
-        
-        <h3>7. Cookies and Tracking</h3>
+                
+        <h4>7. Cookies and Tracking</h4>
         <p>We use cookies to enhance your experience on our website. You may disable cookies in your browser settings, but some features may not function properly as a result.</p>
-        
-        <h3>8. Changes to Privacy Policy</h3>
+                
+        <h4>8. Changes to Privacy Policy</h4>
         <p>We reserve the right to update this policy to reflect changes in our practices or legal requirements. Please check this page periodically for updates.</p>
     </div>
 </div>
