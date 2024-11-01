@@ -67,7 +67,7 @@ const generateEmailHTML = (reading) => {
 <body>
     <div class="email-container">
         <div class="header">
-            <img src="https://general-watts.s3.us-east-2.amazonaws.com/numerology.jpg" alt="Numerology Insights">
+            <img src="https://general-watts.s3.us-east-2.amazonaws.com/numerology.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIA54WIGLVUP5DGRWZZ%2F20241031%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20241031T133659Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBYaCXVzLWVhc3QtMiJHMEUCIQCjrbdADazL62mbpQDu%2FYiIDF0IwKFZ46nMQkhZ9FKj3QIga%2Bh5upqahxH%2BlFHyOBl%2FHUIvV8vlejx96FhdvBrC%2BhsqogIIj%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw5NTQ5NzYzMjkwNjQiDI3VJGi3lTpA1ojmnyr2AcoRqeQRel%2FC2GK%2BVcK2b0V3ThCshCEIsWAuI3jy7Rw3O8oVQD6kldkMX4gYBP6u8005Y2fE67MR8jZNI6mWECIlAR%2BgOzQt5OG9xRW06p91YJ92lWnEvAsF4%2BNxYFFgxvFjy2sKX%2BIdeEBLAIkGxnwc6FkoI4xPo%2FTO0ncN0jDWxJvzsNmDRCWHGsfSJ5N5XOlKHQupmHzEbc3Hcbqpt3l%2ByYSTpKX1636gt8hfhtQYFiq54R0nlmnELi6sOmevmVhWzfpvS7ifoTq9moStmyzqQjqbhIwAyobF6hoctr9gQjBnaMSRDIqfYw2VnLirvuFTjXohDDDgi465BjrfASQWtwCYdGmmdQiMwalEEtlEwmVTCnt3ZARBnlf86QByDwl3oEscHtbNWT%2B7EiIk6dDIWazGVCHUa12HGpDEzfV0HG7P5wsfH0M2a%2FVzPiQiGQuDEF2No8EBW%2FfU4nGHYeKr6DBuXE9AkqXOC60L97NXBACkPLeqHqwHYGbXyb25%2F5cLruZVac2F0i%2BsRiAqW7fZxCWEcjxiCE4x2SvDKoCG6Y%2BvpAqDbqrhgCuVpP3qKHK06qk10Cf760Kyl3I%2B%2Fuavxb5TIXbpNG%2BkvGZNeNRIhbF0nop%2F1INIMH3L2QA%3D&X-Amz-Signature=8cf236a899750d12e1fe1610a75a889a1acb4510e6055faeb8b3575a278ed8ea&X-Amz-SignedHeaders=host&response-content-disposition=inline" alt="Numerology Insights">
         </div>
         <h1 class="title">Your Personalized Numerology Reading</h1>
         <div class="content">
@@ -112,7 +112,7 @@ app.post('/create-checkout-session', async (req, res) => {
             success_url: 'https://numerology-1zyl.onrender.com/success?session_id={CHECKOUT_SESSION_ID}', // Render URL
             cancel_url: 'https://numerology-1zyl.onrender.com/cancel', // Render URL
             customer_email: email,
-        });
+        }); //http://localhost:3000/ https://numerology-1zyl.onrender.com/
 
         res.json({ id: session.id }); // Return session ID to frontend
     } catch (error) {
