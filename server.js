@@ -109,8 +109,8 @@ app.post('/create-checkout-session', async (req, res) => {
                     quantity: 1,
                 },
             ],
-            success_url: `http://localhost:${port}/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `http://localhost:${port}/cancel`,
+            success_url: 'https://numerology-1zyl.onrender.com/success?session_id={CHECKOUT_SESSION_ID}', // Render URL
+            cancel_url: 'https://numerology-1zyl.onrender.com/cancel', // Render URL
             customer_email: email,
         });
 
