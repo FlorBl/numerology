@@ -33,11 +33,13 @@
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             box-sizing: border-box;
+
         }
 
         /* Specific styling for the reading-container */
         .reading-container {
             background-color: rgba(0, 0, 0, 0.6);
+
         }
 
         /* Header and Section Titles */
@@ -102,10 +104,11 @@
         .info-section {
             text-align: left;
             margin: 20px 0;
-            background-color: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 8px;
+        
         }
+        
 
         .info-section h3 {
             font-size: 1.4em;
@@ -146,7 +149,7 @@
 }
 
 .modal-content {
-    background-color: #1a3a5f;
+    background-color: #0f2135;
     margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
@@ -197,13 +200,13 @@
 
     <div class="container">
         <h1>Unlock Your Destiny</h1>
-        <p>Uncover the hidden meanings behind your birth date and name.</p>
+        <p>Unlock the Code of Your Life. What Do Your Numbers Reveal?</p>
         
         <!-- Form Section -->
         <form id="readingForm">
-            <h2>Discover Your Unique Numerology Profile</h2>
+            <h2></h2>
             <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
-            <input type="date" id="birthDate" name="birthDate" required>
+            <input type="date" id="birthDate" name="birthDate" placeholder="Birth Date" required>
             <input type="email" id="email" name="email" placeholder="Email Address" required>
             
             <!-- Checkbox for Terms and Conditions -->
@@ -310,7 +313,7 @@
 
     <!-- Reading Container Section (Added below the main container) -->
     <div class="reading-container">
-        <h2>Your Personalized Numerology Reading</h2>
+        <h2>Decode Your Life’s Blueprint</h2>
 
         <!-- Life Path Number -->
         <div class="number-section">
@@ -381,6 +384,30 @@
                 alert("Failed to create checkout session.");
             }
         });
+    </script>
+    <script>
+        // Function to open the modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+    
+        // Function to close the modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+    
+        // Close the modal if the user clicks outside of it
+        window.onclick = function(event) {
+            const termsModal = document.getElementById('termsModal');
+            const privacyModal = document.getElementById('privacyModal');
+            
+            if (event.target === termsModal) {
+                termsModal.style.display = 'none';
+            }
+            if (event.target === privacyModal) {
+                privacyModal.style.display = 'none';
+            }
+        }
     </script>
     
 </body>
