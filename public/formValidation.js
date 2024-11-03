@@ -44,7 +44,6 @@ $(document).ready(function() {
             $('#dateError').text('Please enter a realistic birth date.').show();
         } else {
             $('#dateError').hide();
-            alert('Form submitted successfully!');
             // Proceed with form submission if necessary
         }
     });

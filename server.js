@@ -6,6 +6,23 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import nodemailer from 'nodemailer';
 import Stripe from 'stripe';
+import session from 'express-session';
+import sqlite3 from 'sqlite3';
+
+const db = new sqlite3.Database('./data/users.db', (err) => {
+    if (err) {
+        console.error("Error opening database:", err);
+    } else {
+        console.log("Connected to SQLite database");
+    }
+});
+
+db.run(`CREATE TABLE IF NOT EXISTS user_data (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fullName TEXT NOT NULL,
+    birthDate TEXT NOT NULL,
+    entryDate TEXT NOT NULL
+)`);
 
 
 // Define __dirname
@@ -23,11 +40,185 @@ const Testing = false;
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'defaultSecret', // Use a secure, random secret in production
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set secure: true if using HTTPS
+}));
+
+// Middleware to protect the admin route
+const adminAuth = (req, res, next) => {
+    if (req.session && req.session.isAuthenticated) {
+        next();
+    } else {
+        res.status(401).send('Unauthorized');
+    }
+};
+
+
+// Route to display the login form
+app.get('/admin-login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'adminLogin.html'));
+});
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    console.log("Username entered:", username);
+    console.log("Password entered:", password);
+    console.log("Env Username:", process.env.ADMIN_USER);
+    console.log("Env Password:", process.env.ADMIN_PASS);
+
+    if (username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS) {
+        req.session.isAuthenticated = true;
+        res.status(200).send('Login successful');
+    } else {
+        res.status(401).send('Incorrect username or password');
+    }
+});
+
+// Protect the admin dashboard route with the adminAuth middleware
+app.get('/admin', adminAuth, (req, res) => {
+    db.all(`SELECT * FROM user_data`, (err, rows) => {
+        if (err) {
+            console.error("Error fetching data:", err);
+            res.status(500).send("Error retrieving data");
+            return;
+        }
+
+        // Render data in a responsive HTML table
+        let html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Admin Dashboard</title>
+            <style>
+                /* General styling */
+                body { 
+                    font-family: Arial, sans-serif; 
+                    padding: 20px; 
+                    background-color: #f7f7f7; 
+                    color: #333; 
+                    margin: 0;
+                }
+                h2 { 
+                    text-align: center; 
+                    color: #333; 
+                    margin-bottom: 20px; 
+                }
+
+                /* Table styling */
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-bottom: 20px; 
+                }
+                th, td { 
+                    padding: 12px; 
+                    border: 1px solid #ddd; 
+                    text-align: left; 
+                }
+                th { 
+                    background-color: #4CAF50; 
+                    color: white; 
+                }
+
+                /* Responsive table styling */
+                @media (max-width: 768px) {
+                    table, thead, tbody, th, td, tr { 
+                        display: block; 
+                    }
+                    th { 
+                        display: none; 
+                    }
+                    td { 
+                        display: flex; 
+                        justify-content: space-between; 
+                        padding: 10px;
+                        border-bottom: 1px solid #ddd; 
+                    }
+                    td::before { 
+                        content: attr(data-label); 
+                        font-weight: bold; 
+                        text-transform: uppercase;
+                        color: #4CAF50;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <h2>Admin Dashboard</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Birth Date</th>
+                        <th>Entry Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        rows.forEach(row => {
+            html += `
+            <tr>
+                <td data-label="ID">${row.id}</td>
+                <td data-label="Full Name">${row.fullName}</td>
+                <td data-label="Birth Date">${row.birthDate}</td>
+                <td data-label="Entry Date">${row.entryDate}</td>
+            </tr>
+            `;
+        });
+
+        html += `
+                </tbody>
+            </table>
+        </body>
+        </html>`;
+
+        res.send(html);
+    });
+});
+
+
+// Route to serve 'index.html' at '/home'
+app.get('/home', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Route to serve 'contactus.html' at '/contactus'
+app.get('/contactus', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'contactus.html'));
+});
+
+// Route to serve 'contactus.html' at '/contactus'
+app.get('/numerology', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'Numerology.html'));
+});
+
+
+
 let userData = {}; // Temporary storage for user data
 
+/*
 // Configure Nodemailer transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail', // Or use another email service
+    auth: {
+        user: process.env.EMAIL_USER, // Your email
+        pass: process.env.EMAIL_PASS  // Your email password
+    }
+});
+*/
+
+const transporter = nodemailer.createTransport({
+    host: 'mail.privateemail.com',
+    port: 465, // Use 587 for TLS
+    secure: true, // true for port 465, false for 587
     auth: {
         user: process.env.EMAIL_USER, // Your email
         pass: process.env.EMAIL_PASS  // Your email password
@@ -67,7 +258,7 @@ const generateEmailHTML = (reading) => {
 <body>
     <div class="email-container">
         <div class="header">
-            <img src="https://general-watts.s3.us-east-2.amazonaws.com/numerology.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIA54WIGLVUP5DGRWZZ%2F20241031%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20241031T133659Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBYaCXVzLWVhc3QtMiJHMEUCIQCjrbdADazL62mbpQDu%2FYiIDF0IwKFZ46nMQkhZ9FKj3QIga%2Bh5upqahxH%2BlFHyOBl%2FHUIvV8vlejx96FhdvBrC%2BhsqogIIj%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw5NTQ5NzYzMjkwNjQiDI3VJGi3lTpA1ojmnyr2AcoRqeQRel%2FC2GK%2BVcK2b0V3ThCshCEIsWAuI3jy7Rw3O8oVQD6kldkMX4gYBP6u8005Y2fE67MR8jZNI6mWECIlAR%2BgOzQt5OG9xRW06p91YJ92lWnEvAsF4%2BNxYFFgxvFjy2sKX%2BIdeEBLAIkGxnwc6FkoI4xPo%2FTO0ncN0jDWxJvzsNmDRCWHGsfSJ5N5XOlKHQupmHzEbc3Hcbqpt3l%2ByYSTpKX1636gt8hfhtQYFiq54R0nlmnELi6sOmevmVhWzfpvS7ifoTq9moStmyzqQjqbhIwAyobF6hoctr9gQjBnaMSRDIqfYw2VnLirvuFTjXohDDDgi465BjrfASQWtwCYdGmmdQiMwalEEtlEwmVTCnt3ZARBnlf86QByDwl3oEscHtbNWT%2B7EiIk6dDIWazGVCHUa12HGpDEzfV0HG7P5wsfH0M2a%2FVzPiQiGQuDEF2No8EBW%2FfU4nGHYeKr6DBuXE9AkqXOC60L97NXBACkPLeqHqwHYGbXyb25%2F5cLruZVac2F0i%2BsRiAqW7fZxCWEcjxiCE4x2SvDKoCG6Y%2BvpAqDbqrhgCuVpP3qKHK06qk10Cf760Kyl3I%2B%2Fuavxb5TIXbpNG%2BkvGZNeNRIhbF0nop%2F1INIMH3L2QA%3D&X-Amz-Signature=8cf236a899750d12e1fe1610a75a889a1acb4510e6055faeb8b3575a278ed8ea&X-Amz-SignedHeaders=host&response-content-disposition=inline" alt="Numerology Insights">
+            <img src="https://general-watts.s3.us-east-2.amazonaws.com/numerology.jpg" alt="Numerology Insights">
         </div>
         <h1 class="title">Your Personalized Numerology Reading</h1>
         <div class="content">
@@ -109,8 +300,8 @@ app.post('/create-checkout-session', async (req, res) => {
                     quantity: 1,
                 },
             ],
-            success_url: 'https://numerology-1zyl.onrender.com/success?session_id={CHECKOUT_SESSION_ID}', // Render URL
-            cancel_url: 'https://numerology-1zyl.onrender.com/cancel', // Render URL
+            success_url: 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}', // Render URL
+            cancel_url: 'http://localhost:3000/cancel', // Render URL
             customer_email: email,
         }); //http://localhost:3000/ https://numerology-1zyl.onrender.com/
 
@@ -121,8 +312,41 @@ app.post('/create-checkout-session', async (req, res) => {
     }
 });
 
+function calculateNumerologyNumbers(fullName, birthDate) {
+    const lifePathNumber = calculateLifePath(birthDate);
+    const expressionNumber = calculateExpression(fullName);
+    const soulUrgeNumber = calculateSoulUrge(fullName);
+    const personalityNumber = calculatePersonality(fullName);
+    const birthdayNumber = new Date(birthDate).getDate();  // Day of birth as Birthday Number
+    const maturityNumber = (lifePathNumber + expressionNumber) % 9 || 9; // Example for Maturity Number
 
-// Route to handle successful payment or direct success for testing
+    return { lifePathNumber, expressionNumber, soulUrgeNumber, personalityNumber, birthdayNumber, maturityNumber };
+}
+
+// Example functions (replace with actual logic)
+function calculateLifePath(birthDate) {
+    // Implement your Life Path calculation here
+    return 8;  // Replace with calculated value
+}
+
+function calculateExpression(fullName) {
+    // Implement your Expression Number calculation here
+    return 4;  // Replace with calculated value
+}
+
+function calculateSoulUrge(fullName) {
+    // Implement your Soul Urge Number calculation here
+    return 5;  // Replace with calculated value
+}
+
+function calculatePersonality(fullName) {
+    // Implement your Personality Number calculation here
+    return 8;  // Replace with calculated value
+}
+
+
+
+
 app.get('/success', async (req, res) => {
     const session_id = req.query.session_id;
 
@@ -133,18 +357,33 @@ app.get('/success', async (req, res) => {
             if (session.payment_status === 'paid') {
                 const { fullName, birthDate, email } = userData;
 
-                // Generate numerology reading
+                // Calculate numerology numbers
+                const { lifePathNumber, expressionNumber, soulUrgeNumber, personalityNumber, birthdayNumber, maturityNumber } = calculateNumerologyNumbers(fullName, birthDate);
+
+                // Save data to the database
+                const entryDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+                db.run(`INSERT INTO user_data (fullName, birthDate, entryDate) VALUES (?, ?, ?)`, [fullName, birthDate, entryDate], (err) => {
+                    if (err) {
+                        console.error("Error saving user data to database:", err);
+                    } else {
+                        console.log("User data saved to database");
+                    }
+                });
+
+
                 const completion = await openai.chat.completions.create({
                     model: "gpt-4",
                     messages: [
                         {
                             role: "user",
-                            content: `Generate a detailed and comprehensive numerology reading for ${fullName} with the birth date ${birthDate}, exceeding 1200 words. Cover each key numerology aspect, including Life Path Number, Expression Number, Soul Urge Number, Personality Number, Birthday Number, Maturity Number, and a discussion of the individual’s current Pinnacle Cycle. Each section should provide insights into personality traits, life purpose, natural strengths, potential challenges, relationships, career tendencies, and personal growth. Include thoughtful advice for each number, guiding the person in embracing their unique qualities and overcoming challenges. 
-                            Maintain a warm and insightful tone to encourage self-discovery, without mentioning any authors, books, or external sources. Format each section title with <h2></h2>. Wrap all <strong> tags with <br> tags on both sides, and use appropriate HTML tags for the rest of the content. 
-                            Exclude <DOCTYPE html>, <html>, <head>, <meta>, <title>, and <body> tags.`
+                            content: `Use around 2000 tokens for the following prompt. Generate a detailed numerology reading for ${fullName}, born on ${birthDate}. The Life Path Number is ${lifePathNumber}, the Expression Number is ${expressionNumber}, the Soul Urge Number is ${soulUrgeNumber}, the Personality Number is ${personalityNumber}, the Birthday Number is ${birthdayNumber}, and the Maturity Number is ${maturityNumber}. 
+                                    Each of these numerology aspects should be a distinct title section with its own detailed description, providing insights into personality traits, life purpose, strengths, challenges, relationships, career tendencies, and personal growth. Organize each section with a title and offer thoughtful, encouraging advice specific to each number to guide the individual in self-discovery.
+                                    **Important**: Do not demonstrate or describe the calculations for each numerology number. Simply provide the meanings, descriptions, and insights based on the given numbers.
+                                    Format each section title in <h2> tags and use HTML formatting, but exclude <DOCTYPE html>, <html>, <head>, <meta>, <title>, and <body> tags to keep the response focused on content only.
+`
                         }
                     ],
-                    max_tokens: 3000,
+                    max_tokens: 2500,
                 });
 
                 const reading = completion.choices[0].message.content;
@@ -170,6 +409,86 @@ app.get('/success', async (req, res) => {
     } else {
         res.redirect('/');
     }
+});
+
+// Route to handle contact form submission
+app.post('/contact', async (req, res) => {
+    const { name, email, subject, message } = req.body;
+
+    // Email content
+    const mailOptions = {
+        from: process.env.EMAIL_USER, // Sender email
+        to: process.env.EMAIL_USER, // Your email where you want to receive messages
+        subject: `Contact Form Submission: ${subject}`,
+        text: `From: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        res.status(200).json({ message: "Message sent successfully!" });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        res.status(500).json({ message: "Failed to send message." });
+    }
+});
+
+
+// Admin route to view user data
+app.get('/admin', adminAuth, (req, res) => {
+    db.all(`SELECT * FROM user_data`, (err, rows) => {
+        if (err) {
+            console.error("Error fetching data:", err);
+            res.status(500).send("Error retrieving data");
+            return;
+        }
+
+        // HTML for displaying the table
+        let html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Admin Dashboard</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; background-color: #f7f7f7; }
+                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                table, th, td { border: 1px solid #ddd; padding: 8px; }
+                th { background-color: #f2f2f2; }
+            </style>
+        </head>
+        <body>
+            <h2>Admin Dashboard</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Birth Date</th>
+                        <th>Entry Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        rows.forEach(row => {
+            html += `
+            <tr>
+                <td>${row.id}</td>
+                <td>${row.fullName}</td>
+                <td>${row.birthDate}</td>
+                <td>${row.entryDate}</td>
+            </tr>
+            `;
+        });
+
+        html += `
+                </tbody>
+            </table>
+        </body>
+        </html>`;
+
+        res.send(html);
+    });
 });
 
 
