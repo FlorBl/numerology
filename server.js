@@ -403,8 +403,8 @@ app.get('/success', async (req, res) => {
                 res.send("Payment was not confirmed.");
             }
         } catch (error) {
-            console.error("Error generating reading:", error);
-            res.status(500).send("Failed to generate and send reading.");
+            console.error("Something went wrong... ", error);
+            res.status(500).send("Something went wrong...");
         }
     } else {
         res.redirect('/');
