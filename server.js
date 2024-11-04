@@ -300,10 +300,10 @@ app.post('/create-checkout-session', async (req, res) => {
                     quantity: 1,
                 },
             ],
-            success_url: 'https://numerology-1zyl.onrender.com/success?session_id={CHECKOUT_SESSION_ID}', // Render URL
-            cancel_url: 'https://numerology-1zyl.onrender.com/cancel', // Render URL
+            success_url: 'https://novasynthesis.com/success?session_id={CHECKOUT_SESSION_ID}', // Render URL
+            cancel_url: 'https://novasynthesis.com/', // Render URL
             customer_email: email,
-        }); //http://localhost:3000/ https://numerology-1zyl.onrender.com/
+        }); //http://localhost:3000/ https://numerology-1zyl.onrender.com/ https://novasynthesis.com/
 
         res.json({ id: session.id }); // Return session ID to frontend
     } catch (error) {
