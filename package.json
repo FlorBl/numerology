@@ -1,11 +1,10 @@
 {
   "name": "numerology",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.cjs"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +19,6 @@
     "openai": "^4.69.0",
     "sqlite3": "^5.1.7",
     "stripe": "^17.3.0"
-  }
+  },
+  "description": ""
 }

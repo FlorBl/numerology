@@ -11,220 +11,7 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <!-- Bootstrap Datepicker CSS -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
-
-    <style>
-        /* General styling */
-        body {
-            font-family: 'Quicksand', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-image: url("view.jpg");
-            background-size: cover;
-            background-position: center;            
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Standardized container styling */
-        .container, .reading-container {
-            max-width: 800px;
-            width: 100%;
-            padding: 20px;
-            margin: 20px auto;
-            background-color: rgba(0, 0, 0, 0.6);
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-            box-sizing: border-box;
-
-        }
-
-        /* Specific styling for the reading-container */
-        .reading-container {
-            background-color: rgba(0, 0, 0, 0.6);
-
-        }
-
-        /* Header and Section Titles */
-        h1, h2 {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        h2 {
-            font-size: 1.8em;
-            margin: 20px 0 10px;
-        }
-
-        /* Description text */
-        p {
-            font-size: 1.1em;
-            line-height: 1.6;
-            margin: 10px 0;
-            text-align: center;
-        }
-
-        /* Form Styling */
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        input[type="text"], input[type="date"], input[type="email"] {
-            width: 80%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 5px;
-            border: none;
-            font-size: 1em;
-            box-sizing: border-box;
-        }
-
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 1.2em;
-            cursor: pointer;
-            background-color: #1a3a5f; /* Deep blue color */
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #2d4a7f; /* Slightly lighter blue for hover effect */
-        }
-
-        /* Info Section Styling */
-        .info-section {
-            text-align: left;
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 8px;
-        
-        }
-        
-
-        .info-section h3 {
-            font-size: 1.4em;
-            margin-bottom: 8px;
-        }
-
-        /* Reading Number Section Styling */
-        .number-section {
-            margin-bottom: 20px;
-            background-color: rgba(179, 179, 179, 0.18);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .number-section h2 {
-            font-size: 1.4em;
-            color: #f1f1f1;
-        }
-
-        /* Privacy Notice Styling */
-        #privacy {
-            border-style: outset;
-            padding: 8px 4px;
-            text-align: center;
-        }
-
-        /* Modal styling */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7); /* Dark background */
-}
-
-.modal-content {
-    background-color: #0f2135;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 600px;
-    border-radius: 10px;
-    color: #c5c5c5;
-}
-
-.modal-content h3 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.8em;
-    margin-bottom: 10px;
-    color: #c5c5c5;
-}
-
-.modal-content p {
-    font-size: 1em;
-    line-height: 1.6;
-}
-
-.close {
-    color: #aaaaaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: #ffffff;
-}
-
-/* Link styling */
-.link-text {
-    color: #f1c40f;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-.link-text:hover {
-    color: #f39c12;
-}
-
-.secTitle{
-    margin-bottom: 15px;
-    text-align: center;
-}
-
- /* Footer styling */
- .footer {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #cccccc;
-            padding: 20px;
-            text-align: center;
-            width: 100%;
-            font-size: 0.9em;
-            margin-top: 20px;
-        }
-
-        .footer a {
-            color: #f1c40f;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .footer a:hover {
-            color: #f39c12;
-        }
-
-    </style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -279,7 +66,7 @@
         <p>All payments made on this site are final and non-refundable, except where required by law. Please ensure you are satisfied with our service offerings before making any payment.</p>
         
         <h4>6. Intellectual Property</h4>
-        <p>All content, including text, images, and numerology readings, is the property of [Your Company Name] and may not be reproduced, distributed, or used commercially without permission.</p>
+        <p>All content, including text, images, and numerology readings, is the property of Nova Synthesis and may not be reproduced, distributed, or used commercially without permission.</p>
         
         <h4>7. Limitation of Liability</h4>
         <p>We provide our services "as-is" without warranties of any kind. We are not liable for any damages or losses resulting from your use of our services.</p>
@@ -288,7 +75,7 @@
         <p>We respect your privacy. Please refer to our Privacy Policy for details on how we collect and use your personal data.</p>
         
         <h4>9. Governing Law</h4>
-        <p>These terms are governed by the laws of [Your Country/State]. Any disputes arising under these terms will be resolved in the courts of [Your Jurisdiction].</p>
+        <p>These terms are governed by the laws of Canada, Province of Quebec. Any disputes arising under these terms will be resolved in the courts of Canada, Province of Quebec.</p>
         
         <h4>10. Changes to Terms</h4>
         <p>We reserve the right to update these terms at any time. Continued use of our website after changes constitutes your acceptance of the new terms.</p>
@@ -309,7 +96,7 @@
         <p>Your data is used solely to generate and deliver your personalized numerology reading. We may also use your email to contact you about related products or services, but only if you have opted in to receive such communications.</p>
                 
         <h4>3. Data Retention</h4>
-        <p>We retain your personal data only as long as necessary to provide our services and fulfill legal requirements. You may request deletion of your data by contacting us at [Your Email Address].</p>
+        <p>We retain your personal data only as long as necessary to provide our services and fulfill legal requirements. You may request deletion of your data by contacting us at info@novasynthesis.com.</p>
                 
         <h4>4. Data Sharing</h4>
         <p>We do not sell, rent, or share your personal data with third parties for marketing purposes. We may share data with service providers (e.g., payment processors) strictly for business purposes and only under contract to protect your data.</p>
@@ -318,7 +105,7 @@
         <p>We use encryption and secure storage practices to protect your data. However, no internet transmission is completely secure, and we cannot guarantee the security of your data transmitted to our site.</p>
                 
         <h4>6. User Rights</h4>
-        <p>You have the right to access, correct, or delete your data. You may also object to certain processing activities, such as marketing. Contact us at [Your Email Address] for any requests.</p>
+        <p>You have the right to access, correct, or delete your data. You may also object to certain processing activities, such as marketing. Contact us at info@novasynthesis.com for any requests.</p>
                 
         <h4>7. Cookies and Tracking</h4>
         <p>We use cookies to enhance your experience on our website. You may disable cookies in your browser settings, but some features may not function properly as a result.</p>
@@ -388,7 +175,7 @@
         <!-- Footer Section -->
         <div class="footer">
             <p>&copy; 2024 Nova Synthesis. All Rights Reserved.</p>
-            <p><a href="ContactUs.html">Contact Us</a> | <a onclick="openModal('privacyModal')">Privacy Policy</a> | <a onclick="openModal('termsModal')">Terms of Service</a></p>
+            <p><a id="contactA" href="ContactUs.html">Contact Us</a> | <a onclick="openModal('privacyModal')">Privacy Policy</a> | <a onclick="openModal('termsModal')">Terms of Service</a></p>
         </div>
 
 

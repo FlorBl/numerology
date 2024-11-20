@@ -1,94 +1,206 @@
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+ /* General styling */
+ body {
+    font-family: 'Quicksand', sans-serif;
     margin: 0;
-    background-color: #f4f4f9;
+    padding: 0;
     background-image: url("view.jpg");
     background-size: cover;
-    background-position: center;
+    background-position: center;            
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.container {
-    max-width: 400px;
-    width: 90%;
-    padding: 25px;
-    background-color: rgba(255, 255, 255, 0.65);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
+/* Standardized container styling */
+.container, .reading-container {
+    max-width: 800px;
+    width: 100%;
+    padding: 20px;
+    margin: 20px auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+
+}
+
+/* Specific styling for the reading-container */
+.reading-container {
+    background-color: rgba(0, 0, 0, 0.6);
+
+}
+
+/* Header and Section Titles */
+h1, h2 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
     text-align: center;
 }
 
 h1 {
-    margin-bottom: 1.5rem;
-    color: #333;
-    font-weight: 500;
-    font-family: cinzel;
+    font-size: 2.5em;
+    margin-bottom: 10px;
 }
 
-label {
-    display: block;
-    margin: 0.75rem 0 0.25rem;
-    font-size: 1rem;
-    color: #555;
+h2 {
+    font-size: 1.8em;
+    margin: 20px 0 10px;
 }
 
+/* Description text */
+p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin: 10px 0;
+    text-align: center;
+}
 
-input[type="text"],
-input[type="date"],
-input[type="email"] {
-    width: 100%;
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input[type="text"], input[type="date"], input[type="email"] {
+    width: 80%;
     padding: 10px;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-input::placeholder {
-    color: #888; /* Softer color for placeholder text */
-    font-style: italic;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: none;
+    font-size: 1em;
+    box-sizing: border-box;
 }
 
 button {
-    width: 50%;
-    padding: 12px;
-    background-color: #454a4e; /* Luxurious medium gray */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(42, 43, 44, 0.5); /* Subtle gray shadow */
-}
-
-button:hover {
-    background-color: #5a6268; /* Darker luxurious gray */
-    transform: scale(1.02);
-}
-
-button:active {
-    background-color: #4e555b; /* Slightly darker for pressed effect */
-}
-
-.info-button {
-    margin-top: 20px;
+    margin-top: 15px;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 1.2em;
     cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
+    background-color: #1a3a5f; /* Deep blue color */
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
 
-.info-button:hover {
-    background-color: #45a049;
+button:hover {
+    background-color: #2d4a7f; /* Slightly lighter blue for hover effect */
+}
+
+/* Info Section Styling */
+.info-section {
+    text-align: left;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 8px;
+
+}
+
+
+.info-section h3 {
+    font-size: 1.4em;
+    margin-bottom: 8px;
+}
+
+/* Reading Number Section Styling */
+.number-section {
+    margin-bottom: 20px;
+    background-color: rgba(179, 179, 179, 0.18);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.number-section h2 {
+    font-size: 1.4em;
+    color: #f1f1f1;
+}
+
+/* Privacy Notice Styling */
+#privacy {
+    border-style: outset;
+    padding: 8px 4px;
+    text-align: center;
+}
+
+/* Modal styling */
+.modal {
+display: none; /* Hidden by default */
+position: fixed;
+z-index: 1;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0, 0, 0, 0.7); /* Dark background */
+}
+
+.modal-content {
+background-color: #0f2135;
+margin: 10% auto;
+padding: 20px;
+border: 1px solid #888;
+width: 80%;
+max-width: 600px;
+border-radius: 10px;
+color: #c5c5c5;
+}
+
+.modal-content h3 {
+font-family: 'Cinzel', serif;
+font-size: 1.8em;
+margin-bottom: 10px;
+color: #c5c5c5;
+}
+
+.modal-content p {
+font-size: 1em;
+line-height: 1.6;
+}
+
+.close {
+color: #aaaaaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
+}
+
+.close:hover {
+color: #ffffff;
+}
+
+/* Link styling */
+.link-text {
+color: #f1c40f;
+cursor: pointer;
+text-decoration: underline;
+}
+
+.link-text:hover {
+color: #f39c12;
+}
+
+.secTitle{
+margin-bottom: 15px;
+text-align: center;
+}
+
+/* Footer styling */
+.footer {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #cccccc;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    font-size: 0.9em;
+    margin-top: 20px;
+}
+
+.footer a {
+    text-decoration: none;
+    font-weight: bold;
+    color: inherit;
 }

@@ -1,13 +1,16 @@
-import 'dotenv/config';
-import express from 'express';
-import OpenAI from 'openai';
-import bodyParser from 'body-parser';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import nodemailer from 'nodemailer';
-import Stripe from 'stripe';
-import session from 'express-session';
-import sqlite3 from 'sqlite3';
+require('dotenv/config');
+const express = require('express');
+const OpenAI = require('openai');
+const bodyParser = require('body-parser');
+const { fileURLToPath } = require('url');
+const path = require('path');
+const nodemailer = require('nodemailer');
+const Stripe = require('stripe');
+const session = require('express-session');
+const sqlite3 = require('sqlite3');
+const http = require('http');
+
+
 
 const db = new sqlite3.Database('./data/users.db', (err) => {
     if (err) {
@@ -25,15 +28,13 @@ db.run(`CREATE TABLE IF NOT EXISTS user_data (
 )`);
 
 
-// Define __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-
-const openai = new OpenAI();
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 const app = express();
-const port = 3000;
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
 // Set Testing mode to true or false
 const Testing = false;
 
@@ -267,7 +268,7 @@ const generateEmailHTML = (reading) => {
         <div class="footer">
             <p>Thank you for choosing our service for your numerology reading. We are here to support you in every step of your journey.</p>
             <p>&copy; 2024 Watts Projects. All rights reserved.</p>
-            <p id="unsubscribe"><a href="https://yourwebsite.com/unsubscribe" style="color: #d4d4d4; text-decoration: none;">Unsubscribe</a></p>
+            <p id="unsubscribe"><a href="" style="color: #d4d4d4; text-decoration: none;">Unsubscribe</a></p>
         </div>
     </div>
 </body>
@@ -295,7 +296,7 @@ app.post('/create-checkout-session', async (req, res) => {
                         product_data: {
                             name: 'Personalized Numerology Reading',
                         },
-                        unit_amount: 3590, // Set the price in cents (e.g., $20.00)
+                        unit_amount: 1502, // Set the price in cents (e.g., $20.00)
                     },
                     quantity: 1,
                 },
@@ -376,14 +377,28 @@ app.get('/success', async (req, res) => {
                     messages: [
                         {
                             role: "user",
-                            content: `Use around 2000 tokens for the following prompt. Generate a detailed numerology reading for ${fullName}, born on ${birthDate}. The Life Path Number is ${lifePathNumber}, the Expression Number is ${expressionNumber}, the Soul Urge Number is ${soulUrgeNumber}, the Personality Number is ${personalityNumber}, the Birthday Number is ${birthdayNumber}, and the Maturity Number is ${maturityNumber}. 
-                                    Each of these numerology aspects should be a distinct title section with its own detailed description, providing insights into personality traits, life purpose, strengths, challenges, relationships, career tendencies, and personal growth. Organize each section with a title and offer thoughtful, encouraging advice specific to each number to guide the individual in self-discovery.
-                                    **Important**: Do not demonstrate or describe the calculations for each numerology number. Simply provide the meanings, descriptions, and insights based on the given numbers.
-                                    Format each section title in <h2> tags and use HTML formatting, but exclude <DOCTYPE html>, <html>, <head>, <meta>, <title>, and <body> tags to keep the response focused on content only.
-`
+                            content: `Generate a highly detailed and personalized numerology reading that is at least 1000 words long for ${fullName}, born on ${birthDate}. The Life Path Number is ${lifePathNumber}, the Expression Number is ${expressionNumber}, the Soul Urge Number is ${soulUrgeNumber}, the Personality Number is ${personalityNumber}, the Birthday Number is ${birthdayNumber}, and the Maturity Number is ${maturityNumber}.
+
+                                                Each numerology aspect should have its own distinct title section, formatted in <h2> tags, followed by an in-depth description. Each section should provide:
+                                                1. A deep explanation of the meaning and significance of the number.
+                                                2. Personalized insights into how this number influences ${fullName}'s personality traits, life purpose, strengths, challenges, and decision-making.
+                                                3. Practical advice on how ${fullName} can harness the strengths of this number and overcome challenges.
+                                                4. Relationship insights, including how this number affects interpersonal dynamics.
+                                                5. Career tendencies and how this number aligns with or supports professional aspirations.
+                                                6. Personal growth opportunities and specific actions ${fullName} can take to live in alignment with their numerology.
+
+                                                Additionally, include:
+                                                - **Reflection Questions**: Provide 1-2 questions at the end of each section to encourage deeper self-awareness and introspection.
+                                                - **Actionable Advice**: Offer specific steps ${fullName} can take to align their life with the energies of each number.
+                                                - **Compatibility Notes**: Include insights on how each number influences relationships and interactions with others.
+
+                                                Make the descriptions encouraging and empowering, and use mystical and poetic language where appropriate to inspire a sense of wonder and connection. Use HTML formatting but exclude <DOCTYPE html>, <html>, <head>, <meta>, <title>, and <body> tags to focus purely on the content.
+
+                                                End with a brief summary and motivational note for ${fullName}, tying all the insights together to inspire self-discovery and growth.`
+
                         }
                     ],
-                    max_tokens: 2500,
+                    max_tokens: 3000,
                 });
 
                 const reading = completion.choices[0].message.content;
@@ -496,7 +511,8 @@ app.get('/admin', adminAuth, (req, res) => {
 app.get('/cancel', (req, res) => {
     res.send("Your payment was canceled. You can try again.");
 });
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+const port = process.env.PORT || 3000;
+const server = http.createServer(app);
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });

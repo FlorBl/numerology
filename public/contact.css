@@ -1,0 +1,162 @@
+        /* General styling */
+        body {
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("view.jpg");
+            background-size: cover;
+            background-position: center;    
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Back Button Styling */
+        .back-button {
+            font-family:Verdana, sans-serif;
+            border: 0.1px solid rgb(146, 146, 146);
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #0c1b2c;
+            color: #c9c9c9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background-color: #2f3033;
+        }
+
+        /* Container styling */
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            margin: 60px auto 20px auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Header and Section Titles */
+        h1, h2 {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin: 20px 0 10px;
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 80%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: none;
+            font-size: 1em;
+            box-sizing: border-box;
+            resize: none;
+        }
+
+        textarea {
+            height: 120px;
+        }
+
+        button {
+            font-family:Verdana, sans-serif;
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+            background-color: #0c1b2c;
+            color: #ffffff;
+            border: 0.1px solid rgb(146, 146, 146);
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #313438;
+        }
+
+        /* Confirmation message styling */
+        #confirmationMessage {
+            display: none;
+            font-size: 1.2em;
+            text-align: center;
+            margin-top: 20px;
+            color: #c9c9c9;
+        }
+
+        /* Footer styling */
+        .footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #cccccc;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            font-size: 0.9em;
+            position: fixed;
+            bottom: 0;
+        }
+
+
+
+
+        .back-button{
+            text-decoration: none;
+            color: white;
+        }
+
+        .back-button:hover{
+            text-decoration: none;
+            color: white;
+        }
+
+        
+/* Style input fields */
+#contactForm input,
+#contactForm textarea {
+    background-color: #f0f0f0; 
+    border: 1px solid #ccc; 
+    color: #333; 
+    padding: 10px; 
+    border-radius: 5px;
+    font-size: 16px; 
+    margin-bottom: 10px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+/* Change background color on focus */
+#contactForm input:focus,
+#contactForm textarea:focus {
+    background-color: #e6f7ff; 
+    border: 1px solid #007bff; 
+    outline: none; 
+}
