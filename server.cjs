@@ -1,4 +1,3 @@
-require('dotenv/config');
 const express = require('express');
 const OpenAI = require('openai');
 const bodyParser = require('body-parser');
@@ -11,7 +10,10 @@ const sqlite3 = require('sqlite3');
 const http = require('http');
 
 
-
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+  }
+  
 const db = new sqlite3.Database('./data/users.db', (err) => {
     if (err) {
         console.error("Error opening database:", err);
@@ -19,6 +21,18 @@ const db = new sqlite3.Database('./data/users.db', (err) => {
         console.log("Connected to SQLite database");
     }
 });
+
+
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
+
+app.use(session({
+  store: new FileStore(),
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+}));
+
 
 db.run(`CREATE TABLE IF NOT EXISTS user_data (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
