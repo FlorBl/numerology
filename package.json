@@ -1,7 +1,7 @@
 {
   "name": "numerology",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.cjs",
   "type": "module",
   "scripts": {
     "start": "node server.cjs"
