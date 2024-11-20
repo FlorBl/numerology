@@ -1,17 +1,17 @@
+require('dotenv/config');
 const express = require('express');
 const OpenAI = require('openai');
 const bodyParser = require('body-parser');
+const { fileURLToPath } = require('url');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const Stripe = require('stripe');
+const session = require('express-session');
 const sqlite3 = require('sqlite3');
 const http = require('http');
 
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
 
-// Database setup
+
 const db = new sqlite3.Database('./data/users.db', (err) => {
     if (err) {
         console.error("Error opening database:", err);
@@ -27,20 +27,28 @@ db.run(`CREATE TABLE IF NOT EXISTS user_data (
     entryDate TEXT NOT NULL
 )`);
 
-// OpenAI setup
+
+
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-});
-
+  });
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Set Testing mode to true or false
+const Testing = false;
 
-// Middleware
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Middleware to protect admin routes
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'defaultSecret', // Use a secure, random secret in production
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set secure: true if using HTTPS
+}));
+
+// Middleware to protect the admin route
 const adminAuth = (req, res, next) => {
     if (req.session && req.session.isAuthenticated) {
         next();
@@ -49,14 +57,19 @@ const adminAuth = (req, res, next) => {
     }
 };
 
+
 // Route to display the login form
 app.get('/admin-login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'adminLogin.html'));
 });
 
-// Admin login route
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
+
+    console.log("Username entered:", username);
+    console.log("Password entered:", password);
+    console.log("Env Username:", process.env.ADMIN_USER);
+    console.log("Env Password:", process.env.ADMIN_PASS);
 
     if (username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS) {
         req.session.isAuthenticated = true;
@@ -81,7 +94,61 @@ app.get('/admin', adminAuth, (req, res) => {
         <html lang="en">
         <head>
             <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Admin Dashboard</title>
+            <style>
+                /* General styling */
+                body { 
+                    font-family: Arial, sans-serif; 
+                    padding: 20px; 
+                    background-color: #f7f7f7; 
+                    color: #333; 
+                    margin: 0;
+                }
+                h2 { 
+                    text-align: center; 
+                    color: #333; 
+                    margin-bottom: 20px; 
+                }
+
+                /* Table styling */
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-bottom: 20px; 
+                }
+                th, td { 
+                    padding: 12px; 
+                    border: 1px solid #ddd; 
+                    text-align: left; 
+                }
+                th { 
+                    background-color: #4CAF50; 
+                    color: white; 
+                }
+
+                /* Responsive table styling */
+                @media (max-width: 768px) {
+                    table, thead, tbody, th, td, tr { 
+                        display: block; 
+                    }
+                    th { 
+                        display: none; 
+                    }
+                    td { 
+                        display: flex; 
+                        justify-content: space-between; 
+                        padding: 10px;
+                        border-bottom: 1px solid #ddd; 
+                    }
+                    td::before { 
+                        content: attr(data-label); 
+                        font-weight: bold; 
+                        text-transform: uppercase;
+                        color: #4CAF50;
+                    }
+                }
+            </style>
         </head>
         <body>
             <h2>Admin Dashboard</h2>
@@ -97,13 +164,13 @@ app.get('/admin', adminAuth, (req, res) => {
                 <tbody>
         `;
 
-        rows.forEach((row) => {
+        rows.forEach(row => {
             html += `
             <tr>
-                <td>${row.id}</td>
-                <td>${row.fullName}</td>
-                <td>${row.birthDate}</td>
-                <td>${row.entryDate}</td>
+                <td data-label="ID">${row.id}</td>
+                <td data-label="Full Name">${row.fullName}</td>
+                <td data-label="Birth Date">${row.birthDate}</td>
+                <td data-label="Entry Date">${row.entryDate}</td>
             </tr>
             `;
         });
@@ -113,10 +180,10 @@ app.get('/admin', adminAuth, (req, res) => {
             </table>
         </body>
         </html>`;
+
         res.send(html);
     });
 });
-
 
 
 // Route to serve 'index.html' at '/home'
@@ -216,6 +283,7 @@ app.get('/', (req, res) => {
 // Route to create a checkout session
 app.post('/create-checkout-session', async (req, res) => {
     const { fullName, birthDate, email } = req.body;
+    userData = { fullName, birthDate, email }; // Store user data temporarily
 
     try {
         const session = await stripe.checkout.sessions.create({
@@ -228,17 +296,17 @@ app.post('/create-checkout-session', async (req, res) => {
                         product_data: {
                             name: 'Personalized Numerology Reading',
                         },
-                        unit_amount: 1502, // Replace with actual price
+                        unit_amount: 1502, // Set the price in cents (e.g., $20.00)
                     },
                     quantity: 1,
                 },
             ],
-            success_url: 'https://novasynthesis.com/success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url: 'https://novasynthesis.com/',
+            success_url: 'https://novasynthesis.com/success?session_id={CHECKOUT_SESSION_ID}', // Render URL
+            cancel_url: 'https://novasynthesis.com/', // Render URL
             customer_email: email,
-        });
+        }); //http://localhost:3000/ https://numerology-1zyl.onrender.com/ https://novasynthesis.com/
 
-        res.json({ id: session.id });
+        res.json({ id: session.id }); // Return session ID to frontend
     } catch (error) {
         console.error("Error creating checkout session:", error);
         res.status(500).send("Failed to create checkout session.");
@@ -444,7 +512,6 @@ app.get('/cancel', (req, res) => {
     res.send("Your payment was canceled. You can try again.");
 });
 const port = process.env.PORT || 3000;
-const server = http.createServer(app);
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
