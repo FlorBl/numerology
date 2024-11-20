@@ -6,14 +6,15 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const Stripe = require('stripe');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const sqlite3 = require('sqlite3');
 const http = require('http');
 
-
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
-  }
-  
+}
+
+// Database setup
 const db = new sqlite3.Database('./data/users.db', (err) => {
     if (err) {
         console.error("Error opening database:", err);
@@ -22,18 +23,6 @@ const db = new sqlite3.Database('./data/users.db', (err) => {
     }
 });
 
-
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
-
-app.use(session({
-  store: new FileStore(),
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: true,
-}));
-
-
 db.run(`CREATE TABLE IF NOT EXISTS user_data (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     fullName TEXT NOT NULL,
@@ -41,26 +30,28 @@ db.run(`CREATE TABLE IF NOT EXISTS user_data (
     entryDate TEXT NOT NULL
 )`);
 
-
-
+// OpenAI setup
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-  });
+});
+
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Set Testing mode to true or false
-const Testing = false;
+// Session setup
+app.use(
+    session({
+        store: new FileStore(),
+        secret: process.env.SESSION_SECRET || 'your-secret-key',
+        resave: false,
+        saveUninitialized: true,
+    })
+);
 
+// Middleware
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'defaultSecret', // Use a secure, random secret in production
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Set secure: true if using HTTPS
-}));
 
 // Middleware to protect the admin route
 const adminAuth = (req, res, next) => {
