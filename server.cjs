@@ -4,8 +4,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const Stripe = require('stripe');
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
 const sqlite3 = require('sqlite3');
 const http = require('http');
 
@@ -37,15 +35,6 @@ const openai = new OpenAI({
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Session setup
-app.use(
-    session({
-        store: new FileStore(),
-        secret: process.env.SESSION_SECRET || 'your-secret-key',
-        resave: false,
-        saveUninitialized: true,
-    })
-);
 
 // Middleware
 app.use(bodyParser.json());
