@@ -1,52 +1,61 @@
 require('dotenv/config');
 const express = require('express');
-const OpenAI = require('openai');
+const { OpenAI } = require('openai');
 const bodyParser = require('body-parser');
 const { fileURLToPath } = require('url');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const Stripe = require('stripe');
 const session = require('express-session');
-const sqlite3 = require('sqlite3');
+const mongoose = require('mongoose');
 const http = require('http');
+const FileStore = require('session-file-store')(session);
 
-
-
-const db = new sqlite3.Database('./data/users.db', (err) => {
-    if (err) {
-        console.error("Error opening database:", err);
-    } else {
-        console.log("Connected to SQLite database");
-    }
-});
-
-db.run(`CREATE TABLE IF NOT EXISTS user_data (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fullName TEXT NOT NULL,
-    birthDate TEXT NOT NULL,
-    entryDate TEXT NOT NULL
-)`);
-
-
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-const app = express();
+// Initialize Stripe with secret key
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Set Testing mode to true or false
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY, // Make sure the environment variable is set
+});
+
+// MongoDB connection configuration
+const mongoURI = 'mongodb://127.0.0.1:27017/numerologydb'; // Your database name is `numerologydb`
+
+// Connect to MongoDB
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+.then(() => console.log('Connected to MongoDB database'))
+.catch(err => console.error('Error connecting to MongoDB:', err));
+
+// Define the schema for `user_data`
+const userSchema = new mongoose.Schema({
+    fullName: { type: String, required: true },
+    birthDate: { type: String, required: true },
+    entryDate: { type: String, required: true },
+});
+
+// Create the model for the collection
+const User = mongoose.model('User', userSchema, 'user_data'); // Explicitly specify the collection name `user_data`
+
+// Initialize Express app
+const app = express();
+
+// Set testing mode
 const Testing = false;
 
+// Middleware
 app.use(bodyParser.json());
 app.use(express.static('public'));
-
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'defaultSecret', // Use a secure, random secret in production
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Set secure: true if using HTTPS
-}));
+app.use(
+    session({
+        store: new FileStore({ path: './sessions' }), // Use the correct path
+        secret: process.env.SESSION_SECRET || 'your-secret-key',
+        resave: false,
+        saveUninitialized: true,
+    })
+);
 
 // Middleware to protect the admin route
 const adminAuth = (req, res, next) => {
@@ -57,12 +66,12 @@ const adminAuth = (req, res, next) => {
     }
 };
 
-
 // Route to display the login form
 app.get('/admin-login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'adminLogin.html'));
 });
 
+// Route to handle login
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -80,13 +89,10 @@ app.post('/login', (req, res) => {
 });
 
 // Protect the admin dashboard route with the adminAuth middleware
-app.get('/admin', adminAuth, (req, res) => {
-    db.all(`SELECT * FROM user_data`, (err, rows) => {
-        if (err) {
-            console.error("Error fetching data:", err);
-            res.status(500).send("Error retrieving data");
-            return;
-        }
+app.get('/admin', adminAuth, async (req, res) => {
+    try {
+        // Fetch all user documents from the MongoDB collection
+        const users = await User.find();
 
         // Render data in a responsive HTML table
         let html = `
@@ -164,13 +170,13 @@ app.get('/admin', adminAuth, (req, res) => {
                 <tbody>
         `;
 
-        rows.forEach(row => {
+        users.forEach((user, index) => {
             html += `
             <tr>
-                <td data-label="ID">${row.id}</td>
-                <td data-label="Full Name">${row.fullName}</td>
-                <td data-label="Birth Date">${row.birthDate}</td>
-                <td data-label="Entry Date">${row.entryDate}</td>
+                <td data-label="ID">${index + 1}</td>
+                <td data-label="Full Name">${user.fullName}</td>
+                <td data-label="Birth Date">${user.birthDate}</td>
+                <td data-label="Entry Date">${user.entryDate}</td>
             </tr>
             `;
         });
@@ -182,7 +188,10 @@ app.get('/admin', adminAuth, (req, res) => {
         </html>`;
 
         res.send(html);
-    });
+    } catch (err) {
+        console.error("Error fetching data:", err);
+        res.status(500).send("Error retrieving data");
+    }
 });
 
 
@@ -283,9 +292,17 @@ app.get('/', (req, res) => {
 // Route to create a checkout session
 app.post('/create-checkout-session', async (req, res) => {
     const { fullName, birthDate, email } = req.body;
-    userData = { fullName, birthDate, email }; // Store user data temporarily
+
+    // Validate input data
+    if (!fullName || !birthDate || !email) {
+        return res.status(400).send("All fields (fullName, birthDate, email) are required.");
+    }
 
     try {
+        const successURL = process.env.SUCCESS_URL || 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}';
+        const cancelURL = process.env.CANCEL_URL || 'http://localhost:3000/';
+
+        // Create checkout session with metadata
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
@@ -296,22 +313,29 @@ app.post('/create-checkout-session', async (req, res) => {
                         product_data: {
                             name: 'Personalized Numerology Reading',
                         },
-                        unit_amount: 1502, // Set the price in cents (e.g., $20.00)
+                        unit_amount: 1502, // Set price in cents
                     },
                     quantity: 1,
                 },
             ],
-            success_url: 'https://novasynthesis.com/success?session_id={CHECKOUT_SESSION_ID}', // Render URL
-            cancel_url: 'https://novasynthesis.com/', // Render URL
+            success_url: successURL,
+            cancel_url: cancelURL,
             customer_email: email,
-        }); //http://localhost:3000/ https://numerology-1zyl.onrender.com/ https://novasynthesis.com/
+            metadata: {
+                fullName,
+                birthDate,
+            },
+        });
 
         res.json({ id: session.id }); // Return session ID to frontend
     } catch (error) {
-        console.error("Error creating checkout session:", error);
+        console.error("Stripe error:", error.message);
         res.status(500).send("Failed to create checkout session.");
     }
 });
+
+
+
 
 function calculateNumerologyNumbers(fullName, birthDate) {
     const lifePathNumber = calculateLifePath(birthDate);
@@ -351,32 +375,39 @@ function calculatePersonality(fullName) {
 app.get('/success', async (req, res) => {
     const session_id = req.query.session_id;
 
-    if (session_id) {
-        try {
-            const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (!session_id) {
+        return res.redirect('/');
+    }
 
-            if (session.payment_status === 'paid') {
-                const { fullName, birthDate, email } = userData;
+    try {
+        const session = await stripe.checkout.sessions.retrieve(session_id);
 
-                // Calculate numerology numbers
-                const { lifePathNumber, expressionNumber, soulUrgeNumber, personalityNumber, birthdayNumber, maturityNumber } = calculateNumerologyNumbers(fullName, birthDate);
+        if (session.payment_status === 'paid') {
+            // Retrieve user data from Stripe metadata
+            const fullName = session.metadata.fullName;
+            const birthDate = session.metadata.birthDate;
+            const email = session.customer_email;
 
-                // Save data to the database
-                const entryDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-                db.run(`INSERT INTO user_data (fullName, birthDate, entryDate) VALUES (?, ?, ?)`, [fullName, birthDate, entryDate], (err) => {
-                    if (err) {
-                        console.error("Error saving user data to database:", err);
-                    } else {
-                        console.log("User data saved to database");
-                    }
-                });
+            if (!fullName || !birthDate || !email) {
+                throw new Error('Missing required user data in metadata.');
+            }
 
+            // Save user data to MongoDB
+            const entryDate = new Date().toISOString().split('T')[0];
+            const newUser = new User({ fullName, birthDate, entryDate });
+            await newUser.save();
 
-                const completion = await openai.chat.completions.create({
-                    model: "gpt-4",
-                    messages: [
-                        {
-                            role: "user",
+            console.log("User data saved to database");
+
+            // Generate personalized numerology reading
+            const { lifePathNumber, expressionNumber, soulUrgeNumber, personalityNumber, birthdayNumber, maturityNumber } =
+                calculateNumerologyNumbers(fullName, birthDate);
+
+            const completion = await openai.chat.completions.create({
+                model: "gpt-4",
+                messages: [
+                    {
+                        role: "user",
                             content: `Generate a highly detailed and personalized numerology reading that is at least 1000 words long for ${fullName}, born on ${birthDate}. The Life Path Number is ${lifePathNumber}, the Expression Number is ${expressionNumber}, the Soul Urge Number is ${soulUrgeNumber}, the Personality Number is ${personalityNumber}, the Birthday Number is ${birthdayNumber}, and the Maturity Number is ${maturityNumber}.
 
                                                 Each numerology aspect should have its own distinct title section, formatted in <h2> tags, followed by an in-depth description. Each section should provide:
@@ -400,10 +431,10 @@ app.get('/success', async (req, res) => {
                     ],
                     max_tokens: 3000,
                 });
-
+    
                 const reading = completion.choices[0].message.content;
                 const emailHTML = generateEmailHTML(reading);
-
+    
                 // Send email
                 await transporter.sendMail({
                     from: process.env.EMAIL_USER,
@@ -411,20 +442,18 @@ app.get('/success', async (req, res) => {
                     subject: 'Your Personalized Numerology Reading',
                     html: emailHTML,
                 });
-
-                userData = null; // Clear user data after sending email
+    
+                console.log("Email sent successfully");
+    
                 res.sendFile(path.join(__dirname, 'public', 'success.html'));
             } else {
                 res.send("Payment was not confirmed.");
             }
         } catch (error) {
-            console.error("Something went wrong... ", error);
+            console.error("Error in success route:", error.message);
             res.status(500).send("Something went wrong...");
         }
-    } else {
-        res.redirect('/');
-    }
-});
+    });
 
 // Route to handle contact form submission
 app.post('/contact', async (req, res) => {
