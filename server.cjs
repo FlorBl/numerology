@@ -19,7 +19,8 @@ const openai = new OpenAI({
 });
 
 // MongoDB connection configuration
-const mongoURI = 'mongodb://127.0.0.1:27017/numerologydb'; // Your database name is `numerologydb`
+const mongoURI = process.env.MONGO_URI; // Use the environment variable
+
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
@@ -48,12 +49,23 @@ const Testing = false;
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static('public'));
+const MongoDBStore = require('connect-mongodb-session')(session);
+
+const store = new MongoDBStore({
+    uri: process.env.MONGO_URI,
+    collection: 'sessions',
+});
+
+store.on('error', (error) => {
+    console.error('Session store error:', error);
+});
+
 app.use(
     session({
-        store: new FileStore({ path: './sessions' }), // Use the correct path
         secret: process.env.SESSION_SECRET || 'your-secret-key',
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
+        store: store, // Use MongoDB store
     })
 );
 
