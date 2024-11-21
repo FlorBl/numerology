@@ -22,13 +22,14 @@ const openai = new OpenAI({
 const mongoURI = process.env.MONGO_URI; // Use the environment variable
 
 
-// Connect to MongoDB
-mongoose.connect(mongoURI, {
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    ssl: true,
 })
-.then(() => console.log('Connected to MongoDB database'))
-.catch(err => console.error('Error connecting to MongoDB:', err));
+    .then(() => console.log('Connected to MongoDB database'))
+    .catch(err => console.error('Error connecting to MongoDB:', err));
+
 
 // Define the schema for `user_data`
 const userSchema = new mongoose.Schema({
@@ -52,9 +53,10 @@ app.use(express.static('public'));
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 const store = new MongoDBStore({
-    uri: process.env.MONGO_URI,
+    uri: process.env.MONGO_URI + "&ssl=true",
     collection: 'sessions',
 });
+
 
 store.on('error', (error) => {
     console.error('Session store error:', error);
