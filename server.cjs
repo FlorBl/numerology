@@ -53,13 +53,14 @@ app.use(express.static('public'));
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 const store = new MongoDBStore({
-    uri: process.env.MONGO_URI + "&ssl=true",
+    uri: process.env.MONGO_URI + "?retryWrites=true&w=majority&ssl=true",
     collection: 'sessions',
 });
 
 
 store.on('error', (error) => {
     console.error('Session store error:', error);
+    // Optionally fallback to an in-memory session store
 });
 
 app.use(
