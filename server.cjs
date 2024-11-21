@@ -4,10 +4,9 @@ const { OpenAI } = require('openai');
 const bodyParser = require('body-parser');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const Stripe = require('stripe');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Initialize Stripe with secret key
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY, // Make sure the environment variable is set
