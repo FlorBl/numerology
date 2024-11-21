@@ -53,7 +53,7 @@ app.use(express.static('public'));
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 const store = new MongoDBStore({
-    uri: process.env.MONGO_URI + "?retryWrites=true&w=majority&ssl=true",
+    uri: process.env.MONGO_URI, // Ensure this URI is clean
     collection: 'sessions',
 });
 
