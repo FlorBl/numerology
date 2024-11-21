@@ -95,8 +95,8 @@ app.post('/create-checkout-session', async (req, res) => {
     }
 
     try {
-        const successURL = process.env.SUCCESS_URL || 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}';
-        const cancelURL = process.env.CANCEL_URL || 'http://localhost:3000/';
+        const successURL = process.env.SUCCESS_URL || 'https://fast-badlands-41952-f990752a1749.herokuapp.com/success?session_id={CHECKOUT_SESSION_ID}';
+        const cancelURL = process.env.CANCEL_URL || 'https://fast-badlands-41952-f990752a1749.herokuapp.com/';
 
         // Create checkout session with metadata
         const session = await stripe.checkout.sessions.create({
