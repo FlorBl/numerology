@@ -4,9 +4,10 @@ const { OpenAI } = require('openai');
 const bodyParser = require('body-parser');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Stripe = require('stripe');
 
 // Initialize Stripe with secret key
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY, // Make sure the environment variable is set
@@ -112,6 +113,7 @@ app.post('/create-checkout-session', async (req, res) => {
                     },
                     quantity: 1,
                 },
+                red.redirect(session.url)
             ],
             success_url: successURL,
             cancel_url: cancelURL,
