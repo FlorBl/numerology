@@ -95,8 +95,8 @@ app.post('/create-checkout-session', async (req, res) => {
     }
 
     try {
-        const successURL = process.env.SUCCESS_URL || 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}';
-        const cancelURL = process.env.CANCEL_URL || 'http://localhost:3000/';
+        const successURL = process.env.SUCCESS_URL || 'https://novasynthesis-9c723346628a.herokuapp.com/success?session_id={CHECKOUT_SESSION_ID}';
+        const cancelURL = process.env.CANCEL_URL || 'https://novasynthesis-9c723346628a.herokuapp.com/';
 
         // Create checkout session with metadata
         const session = await stripe.checkout.sessions.create({

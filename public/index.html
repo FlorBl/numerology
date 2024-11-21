@@ -202,7 +202,7 @@
                     window.location.href = data.testingRedirect;
                 } else if (data.id) {
                     // Redirect to Stripe checkout if live payment is enabled
-                    const stripe = Stripe('pk_test_51QEtfIFV30F9kFicF3eb8oxnCyZCbVB7CAsKtH6tsrnFGiKZ598scMWxO6c7wZGJIHwjEaJNGnqFnnq5yK9qdcbx00Jp8HByB9'); // Replace with your Stripe public key
+                    const stripe = Stripe('pk_live_51QEtfIFV30F9kFiczsUvWtoznqXywtmqMB1SIuIDP2f2pF6Fd88kWmi51q3iN7cWREZAxUzwVOg2r4ZSESKkOcBB009aztmQCr'); // Replace with your Stripe public key
                     await stripe.redirectToCheckout({ sessionId: data.id });
                 } else {
                     alert("An error occurred: " + data.error);
