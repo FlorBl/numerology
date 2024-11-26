@@ -109,7 +109,7 @@ app.post('/create-checkout-session', async (req, res) => {
                         product_data: {
                             name: 'Personalized Numerology Reading',
                         },
-                        unit_amount: 1502, // Set price in cents
+                        unit_amount: 100, // Set price in cents
                     },
                     quantity: 1,
                 },
